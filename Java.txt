@@ -1,0 +1,156 @@
+import java.util.Scanner;
+
+public class Forza4 {
+    private static final int ROWS = 6;
+    private static final int COLS = 7;
+    private static final char EMPTY = ' ';
+    private static final char PLAYER1 = 'X';
+    private static final char PLAYER2 = 'O';
+    private char[][] board = new char[ROWS][COLS];
+    private char currentPlayer = PLAYER1;
+
+    public static void main(String[] args) {
+        Forza4 game = new Forza4();
+        game.startGame();
+    }
+
+    public Forza4() {
+        initializeBoard();
+    }
+
+    private void initializeBoard() {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                board[row][col] = EMPTY;
+            }
+        }
+    }
+
+    public void startGame() {
+        boolean gameWon = false;
+        while (true) {
+            printBoard();
+            int col = getPlayerMove();
+            if (makeMove(col)) {
+                if (checkWin()) {
+                    gameWon = true;
+                    printBoard();
+                    System.out.println("Giocatore " + currentPlayer + " ha vinto!");
+                    break;
+                }
+                switchPlayer();
+            } else {
+                System.out.println("Colonna piena. Prova un'altra colonna.");
+            }
+
+            if (isBoardFull()) {
+                printBoard();
+                System.out.println("La partita è finita in pareggio.");
+                break;
+            }
+        }
+    }
+
+    private void printBoard() {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                System.out.print("| " + board[row][col] + " ");
+            }
+            System.out.println("|");
+        }
+        for (int col = 0; col < COLS; col++) {
+            System.out.print("----");
+        }
+        System.out.println("-");
+    }
+
+    private int getPlayerMove() {
+        Scanner scanner = new Scanner(System.in);
+        int col;
+        while (true) {
+            System.out.print("Giocatore " + currentPlayer + ", scegli una colonna (1-7): ");
+            col = scanner.nextInt() - 1;
+            if (col >= 0 && col < COLS) {
+                break;
+            } else {
+                System.out.println("Input non valido. Inserisci un numero tra 1 e 7.");
+            }
+        }
+        return col;
+    }
+
+    private boolean makeMove(int col) {
+        for (int row = ROWS - 1; row >= 0; row--) {
+            if (board[row][col] == EMPTY) {
+                board[row][col] = currentPlayer;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void switchPlayer() {
+        currentPlayer = (currentPlayer == PLAYER1) ? PLAYER2 : PLAYER1;
+    }
+
+    private boolean checkWin() {
+        // Controllo righe
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS - 3; col++) {
+                if (board[row][col] == currentPlayer &&
+                    board[row][col + 1] == currentPlayer &&
+                    board[row][col + 2] == currentPlayer &&
+                    board[row][col + 3] == currentPlayer) {
+                    return true;
+                }
+            }
+        }
+
+        // Controllo colonne
+        for (int row = 0; row < ROWS - 3; row++) {
+            for (int col = 0; col < COLS; col++) {
+                if (board[row][col] == currentPlayer &&
+                    board[row + 1][col] == currentPlayer &&
+                    board[row + 2][col] == currentPlayer &&
+                    board[row + 3][col] == currentPlayer) {
+                    return true;
+                }
+            }
+        }
+
+        // Controllo diagonali (su-destra)
+        for (int row = 0; row < ROWS - 3; row++) {
+            for (int col = 0; col < COLS - 3; col++) {
+                if (board[row][col] == currentPlayer &&
+                    board[row + 1][col + 1] == currentPlayer &&
+                    board[row + 2][col + 2] == currentPlayer &&
+                    board[row + 3][col + 3] == currentPlayer) {
+                    return true;
+                }
+            }
+        }
+
+        // Controllo diagonali (su-sinistra)
+        for (int row = 0; row < ROWS - 3; row++) {
+            for (int col = 3; col < COLS; col++) {
+                if (board[row][col] == currentPlayer &&
+                    board[row + 1][col - 1] == currentPlayer &&
+                    board[row + 2][col - 2] == currentPlayer &&
+                    board[row + 3][col - 3] == currentPlayer) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isBoardFull() {
+        for (int col = 0; col < COLS; col++) {
+            if (board[0][col] == EMPTY) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
